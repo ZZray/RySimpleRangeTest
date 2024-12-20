@@ -283,7 +283,7 @@ public:
      * @param name 测试项名称
      * @return 当前对象的引用，用于链式调用
      */
-    RySimpleRangeTester& expect(std::string_view name)
+    RySimpleRangeTester& expectFail(std::string_view name)
     {
         if (auto it = m_testItems.find(std::string{name}); it != m_testItems.end()) {
             it->second.expectedToFail = true;
@@ -298,7 +298,7 @@ public:
      * @return 当前对象的引用，用于链式调用
      */
     template <typename Pred>
-    RySimpleRangeTester& expectIf(Pred pred)
+    RySimpleRangeTester& expectFailIf(Pred pred)
     {
         for (auto& [_, item] : m_testItems) {
             if (pred(item)) {
@@ -306,6 +306,18 @@ public:
             }
         }
         return *this;
+    }
+
+    /**
+     * @brief 设置仅运行指定名称的测试项
+     * @param name 名字
+     * @return 当前对象的引用，用于链式调用
+     */
+    RySimpleRangeTester& only(const std::string& name)
+    {
+        return removeIf([&](const auto& item) {
+            return item.name != name; // 修改为直接比较名称
+        });
     }
 
     /**
